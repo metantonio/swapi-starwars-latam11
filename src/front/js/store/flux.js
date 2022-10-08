@@ -1,3 +1,5 @@
+import { planetStore, planetActions } from "./planetas.js";
+
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
@@ -6,14 +8,19 @@ const getState = ({ getStore, getActions, setStore }) => {
 				{
 					title: "FIRST",
 					background: "white",
-					initial: "white"
+					initial: "white",
+					ruta: "uno",
+					indice: 0
 				},
 				{
 					title: "SECOND",
 					background: "white",
-					initial: "white"
+					initial: "white",
+					ruta: "dos",
+					indice: 1
 				}
-			]
+			],
+			...planetStore
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -22,14 +29,14 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			getMessage: async () => {
-				try{
+				try {
 					// fetching data from the backend
 					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
 					const data = await resp.json()
 					setStore({ message: data.message })
 					// don't forget to return something, that is how the async resolves
 					return data;
-				}catch(error){
+				} catch (error) {
 					console.log("Error loading message from backend", error)
 				}
 			},
@@ -44,9 +51,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 					return elm;
 				});
 
-				//reset the global store
-				setStore({ demo: demo });
-			}
+				//reset the local store
+				setStore({ ...store, demo: demo });
+			},
+			...planetActions(getStore, getActions, setStore)
 		}
 	};
 };
